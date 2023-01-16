@@ -1,13 +1,12 @@
 import os
+import logging
 from slack_bolt import App
 from dotenv import load_dotenv
 
 load_dotenv()
+logging.basicConfig(level=logging.DEBUG)
 
-app = App(
-    token=os.environ.get("SLACK_BOT_TOKEN"),
-    signing_secret=os.environ.get("SLACK_SIGNING_SECRET")
-)
+app = App()
 
 @app.message("Hello")
 def say_hello(message, say):
@@ -49,5 +48,13 @@ def update_home_tab(client, event, logger):
         logger.error(f"Error publishing home tab: {e}")
 
 
-if __name__ == "__main__":
-    app.start(port=int(os.environ.get("PORT", 5000)))
+from flask import Flask, request
+from slack_bolt.adapter.flask import SlackRequestHandler
+
+flask_app = Flask(__name__)
+handler = SlackRequestHandler(app)
+
+
+@flask_app.route("/slack/events", methods=["POST"])
+def slack_events():
+    return handler.handle(request)
