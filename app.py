@@ -11,7 +11,7 @@ app = App()
 @app.message("Hello")
 def say_hello(message, say):
     user = message['user']
-    say(f"Hi there, <@{user}>!")
+    say(f"Hello, <@{user}>!")
 
 @app.event("app_home_opened")
 def update_home_tab(client, event, logger):
